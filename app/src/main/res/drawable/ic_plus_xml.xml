@@ -8,7 +8,7 @@
         </shape>
     </item>
     <item
-        android:drawable="@drawable/ic_search"
+        android:drawable="@drawable/ic_plus"
         android:width="21dp"
         android:height="15dp"
         android:gravity="center"/>
