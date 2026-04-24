@@ -10,6 +10,6 @@
         android:drawable="@drawable/ic_search"
         android:width="14dp"
         android:height="14dp"
-        android:left="31dp"
+        android:left="20dp"
         android:top="19dp"/>
 </layer-list>
