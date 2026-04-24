@@ -61,7 +61,9 @@ public class PopularActivity extends AppCompatActivity {
             CategoryList.setVisibility(View.GONE);
 
             TextView TvNameCategory = findViewById(R.id.tv_name_category);
-            TvNameCategory.setVisibility(View.GONE);
+            if (TvNameCategory != null) {
+                TvNameCategory.setVisibility(View.GONE);
+            }
         }
         Items = IdCategory == -1 ? ItemContext.All() : ItemContext.GetByCategory(IdCategory);
         CardList.setLayoutManager(new GridLayoutManager(this, 2));
@@ -96,7 +98,7 @@ public class PopularActivity extends AppCompatActivity {
         } else {
             String searchLower = filterText.toLowerCase();
             for (Item item : Items){
-                if (item.Name.toLowerCase().contains(searchLower)) {
+                if (item.Name.toLowerCase().contains(searchLower) || item.Model.toLowerCase().contains(searchLower)) {
                     filtered.add(item);
                 }
             }

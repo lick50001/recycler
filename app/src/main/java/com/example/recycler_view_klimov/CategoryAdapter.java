@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.inline.InlineContentView;
 
+import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,9 +25,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     CategoryAdapter(Context context, List<Category> categorys, iOnClickInterface onClickInterface) {
         this.Inflater = LayoutInflater.from(context);
         this.Categorys = categorys;
+        this.OnClickInterface = onClickInterface;
 
         BackgroundSelect = ContextCompat.getDrawable(context, R.drawable.item_category_background_select);
-        this.OnClickInterface = onClickInterface;
     }
 
     @Override
@@ -39,6 +40,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     public void onBindViewHolder(CategoryAdapter.ViewHolder holder, int position) {
         Category Category = Categorys.get(position);
         holder.tvName.setText(Category.Name);
+
         holder.parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
