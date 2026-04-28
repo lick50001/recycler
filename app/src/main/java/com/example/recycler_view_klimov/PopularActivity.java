@@ -67,7 +67,7 @@ public class PopularActivity extends AppCompatActivity {
         }
         Items = IdCategory == -1 ? ItemContext.All() : ItemContext.GetByCategory(IdCategory);
         CardList.setLayoutManager(new GridLayoutManager(this, 2));
-        ItemAdapter CardAdapter = new ItemAdapter(this, Items);
+        ItemAdapter CardAdapter = new ItemAdapter(this, Items, MainActivity.init.AddBasket);
         CardList.setAdapter(CardAdapter);
 
         Search.addTextChangedListener(new TextWatcher() {
@@ -104,7 +104,7 @@ public class PopularActivity extends AppCompatActivity {
             }
         }
 
-        ItemAdapter CardAdapter = new ItemAdapter(this, filtered);
+        ItemAdapter CardAdapter = new ItemAdapter(this, filtered, MainActivity.init.AddBasket);
         CardList.setAdapter(CardAdapter);
     }
 
@@ -121,7 +121,7 @@ public class PopularActivity extends AppCompatActivity {
             TvNamePage.setText(SelectCategory.Name);
 
             Items = ItemContext.GetByCategory(SelectCategory.Id);
-            ItemAdapter CardAdapter = new ItemAdapter(Context, Items);
+            ItemAdapter CardAdapter = new ItemAdapter(Context, Items, MainActivity.init.AddBasket);
             CardList.setAdapter(CardAdapter);
         }
     };

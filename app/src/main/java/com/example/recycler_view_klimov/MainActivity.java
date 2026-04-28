@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +19,9 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     public Context Context;
+    public static MainActivity init;
+    public ArrayList<Basket> BasketList = new ArrayList<>();
+    public ArrayList<Item> Items;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,9 +29,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Context = this;
+        init = this;
 
         ArrayList<Category> Categorys = CategoryContext.All();
-        ArrayList<Item> Items = ItemContext.All();
+        Items = ItemContext.All();
 
         RecyclerView CategoryList = findViewById(R.id.category_list);
         RecyclerView CardList = findViewById(R.id.card_list);
@@ -35,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         CategoryAdapter CategoryAdapter = new CategoryAdapter(this, Categorys, Click);
         CategoryList.setAdapter(CategoryAdapter);
 
-        ItemAdapter CardAdapter = new ItemAdapter(this, Items);
+        ItemAdapter CardAdapter = new ItemAdapter(this, Items, AddBasket);
         CardList.setAdapter(CardAdapter);
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -56,6 +61,29 @@ public class MainActivity extends AppCompatActivity {
             Intent newIntent = new Intent(Context, PopularActivity.class);
             newIntent.putExtra("Category", position);
             startActivity(newIntent);
+        }
+    };
+
+    public iOnClickInterface AddBasket = new iOnClickInterface() {
+        @Override
+        public void setClick(View view, int position) {
+            Basket Item = BasketList.stream()
+                    .filter(item -> item.Item.Id == position)
+                    .findAny()
+                    .orElse(null);
+            Item Finditem = Items.stream().filter(item -> item.Id == position)
+                    .findAny()
+                    .orElse(null);
+
+            if (Item == null) {
+                Item = new Basket(Finditem, 1);
+                BasketList.add(Item);
+            }
+            else {
+                Item.Count++;
+            }
+
+            Toast.makeText(Context, "Товар добавлен в корзину", Toast.LENGTH_SHORT).show();
         }
     };
 }
