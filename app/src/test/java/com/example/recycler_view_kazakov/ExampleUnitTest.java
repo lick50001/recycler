@@ -1,4 +1,4 @@
-package com.example.recycler_view_klimov;
+package com.example.recycler_view_kazakov;
 
 import org.junit.Test;
 

@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "recycler_view_Klimov"
+rootProject.name = "recycler_view_Kazakov"
 include ':app'

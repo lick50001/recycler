@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.recycler_view_klimov'
+    namespace 'com.example.recycler_view_kazakov'
     compileSdk 36
 
     defaultConfig {
-        applicationId "com.example.recycler_view_klimov"
+        applicationId "com.example.recycler_view_kazakov"
         minSdk 28
         targetSdk 36
         versionCode 1
