@@ -67,20 +67,19 @@ public class MainActivity extends AppCompatActivity {
     public iOnClickInterface AddBasket = new iOnClickInterface() {
         @Override
         public void setClick(View view, int position) {
-            Basket Item = BasketList.stream()
-                    .filter(item -> item.Item.Id == position)
+            Basket existing = BasketList.stream()
+                    .filter(b -> b.Product.Id == position)
                     .findAny()
                     .orElse(null);
-            Item Finditem = Items.stream().filter(item -> item.Id == position)
+            Item findItem = Items.stream()
+                    .filter(i -> i.Id == position)
                     .findAny()
                     .orElse(null);
 
-            if (Item == null) {
-                Item = new Basket(Finditem, 1);
-                BasketList.add(Item);
-            }
-            else {
-                Item.Count++;
+            if (existing == null) {
+                BasketList.add(new Basket(findItem, 1));
+            } else {
+                existing.Count++;
             }
 
             Toast.makeText(Context, "Товар добавлен в корзину", Toast.LENGTH_SHORT).show();

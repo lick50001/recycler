@@ -1,10 +1,11 @@
 package com.example.recycler_view_klimov;
 
 public class Basket {
-    public Item Item;
+    public Item Product;
     public Integer Count;
-    public Basket(Item item, Integer count) {
-        this.Item = item;
+
+    public Basket(Item product, Integer count) {
+        this.Product = product;
         this.Count = count;
     }
 }

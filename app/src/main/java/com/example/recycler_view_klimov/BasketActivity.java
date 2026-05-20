@@ -1,10 +1,8 @@
 package com.example.recycler_view_klimov;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -12,9 +10,6 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,7 +24,9 @@ public class BasketActivity extends AppCompatActivity {
         @Override
         public void setClick(View view, int position) {
             MainActivity.init.BasketList.remove(position);
-            BasketRV.setAdapter(BasketAdapter);
+            BasketAdapter.notifyItemRemoved(position);
+            BasketAdapter.notifyItemRangeChanged(position, BasketAdapter.getItemCount());
+            CostCalculator();
         }
     };
 
@@ -48,7 +45,6 @@ public class BasketActivity extends AppCompatActivity {
 
         Context = this;
         BasketRV = findViewById(R.id.basket_list);
-
         tvSum = findViewById(R.id.tv_sum);
         tvAllSum = findViewById(R.id.tv_all_sum);
 
@@ -63,53 +59,75 @@ public class BasketActivity extends AppCompatActivity {
 
     ItemTouchHelper.SimpleCallback SwipeAdapter = new ItemTouchHelper.SimpleCallback(0,
             ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
         @Override
-        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
+                              RecyclerView.ViewHolder target) {
             return false;
         }
 
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int swipeDir) {
-            BasketRV.setAdapter(BasketAdapter);
+            int position = viewHolder.getAdapterPosition();
+            if (swipeDir == ItemTouchHelper.LEFT) {
+                // свайп влево — удалить товар
+                MainActivity.init.BasketList.remove(position);
+                BasketAdapter.notifyItemRemoved(position);
+                BasketAdapter.notifyItemRangeChanged(position, BasketAdapter.getItemCount());
+                CostCalculator();
+            } else {
+                // свайп вправо — просто вернуть карточку на место
+                BasketAdapter.notifyItemChanged(position);
+            }
         }
 
         @Override
-        public void onChildDraw(
-                Canvas c,
-                RecyclerView recyclerView,
-                RecyclerView.ViewHolder viewHolder,
-                float dX,
-                float dY,
-                int actionState,
-                boolean isCurrentlyActive) {
-            Resources r = getResources();
-            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 58, r.getDisplayMetrics());
+        public void clearView(@NonNull RecyclerView recyclerView,
+                              @NonNull RecyclerView.ViewHolder viewHolder) {
+            // сбросить трансляцию карточки когда свайп завершён
+            View cardView = viewHolder.itemView.findViewById(R.id.parent);
+            if (cardView != null) cardView.setTranslationX(0);
+            super.clearView(recyclerView, viewHolder);
+        }
 
+        @Override
+        public void onChildDraw(Canvas c, RecyclerView recyclerView,
+                                RecyclerView.ViewHolder viewHolder, float dX, float dY,
+                                int actionState, boolean isCurrentlyActive) {
+
+            View cardView = viewHolder.itemView.findViewById(R.id.parent);
             LinearLayout btnDelete = viewHolder.itemView.findViewById(R.id.ll_delete);
             LinearLayout btnCount = viewHolder.itemView.findViewById(R.id.ll_count);
 
             if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-                if (dX > -px) {
+                if (dX < 0) {
+                    // свайп влево — показать удаление справа
                     btnDelete.setVisibility(View.VISIBLE);
                     btnCount.setVisibility(View.GONE);
-                } else if (dX > px) {
+                } else if (dX > 0) {
+                    // свайп вправо — показать счётчик слева
                     btnDelete.setVisibility(View.GONE);
                     btnCount.setVisibility(View.VISIBLE);
+                } else {
+                    btnDelete.setVisibility(View.GONE);
+                    btnCount.setVisibility(View.GONE);
                 }
+                // двигаем только саму карточку, панели остаются на месте
+                if (cardView != null) cardView.setTranslationX(dX);
+                // super НЕ вызываем, чтобы не двигался весь itemView
+            } else {
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
             }
-
-            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
         }
     };
 
     public void CostCalculator() {
         float ItemPrice = 0;
-        for (Basket Item: MainActivity.init.BasketList) {
-            ItemPrice += Item.Item.Price * Item.Count;
+        for (Basket Item : MainActivity.init.BasketList) {
+            ItemPrice += Item.Product.Price * Item.Count;
         }
-
         tvSum.setText("₽" + ItemPrice);
-        ItemPrice += 60.20;
+        ItemPrice += 60.20f;
         tvAllSum.setText("₽" + ItemPrice);
     }
 

@@ -19,7 +19,8 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.ViewHolder
     public LayoutInflater Inflater;
     public ArrayList<Basket> BasketItems;
 
-    public BasketAdapter(Context context, ArrayList<Basket> basketItems, iOnClickInterface delete, iOnClickInterface cost) {
+    public BasketAdapter(Context context, ArrayList<Basket> basketItems,
+                         iOnClickInterface delete, iOnClickInterface cost) {
         this.Inflater = LayoutInflater.from(context);
         this.BasketItems = basketItems;
         this.Delete = delete;
@@ -27,43 +28,43 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.ViewHolder
     }
 
     @Override
-    public BasketAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = Inflater.inflate(R.layout.item_basket, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(BasketAdapter.ViewHolder holder, int position) {
-        Basket Item = BasketItems.get(position);
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Basket item = BasketItems.get(position);
 
-        holder.tvName.setText(Item.Item.Name);
-        holder.tvPrice.setText("₽" + String.valueOf(Item.Item.Price));
-        holder.tvCount.setText(String.valueOf(Item.Count));
+        holder.tvName.setText(item.Product.Name);
+        holder.tvPrice.setText("₽" + item.Product.Price);
+        holder.tvCount.setText(String.valueOf(item.Count));
 
-        holder.btnPlus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Item.Count ++;
-                holder.tvCount.setText(String.valueOf(Item.Count));
-                Cost.setClick(view, position);
+        holder.btnPlus.setOnClickListener(view -> {
+            int pos = holder.getAdapterPosition();
+            if (pos == RecyclerView.NO_ID) return;
+            BasketItems.get(pos).Count++;
+            holder.tvCount.setText(String.valueOf(BasketItems.get(pos).Count));
+            Cost.setClick(view, pos);
+        });
+
+        holder.btnMinus.setOnClickListener(view -> {
+            int pos = holder.getAdapterPosition();
+            if (pos == RecyclerView.NO_ID) return;
+            Basket current = BasketItems.get(pos);
+            if (current.Count > 1) {
+                current.Count--;
+                holder.tvCount.setText(String.valueOf(current.Count));
+                Cost.setClick(view, pos);
             }
         });
 
-        holder.btnMinus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Item.Count--;
-                holder.tvCount.setText(String.valueOf(Item.Count));
-                Cost.setClick(view, position);
-            }
-        });
-
-        holder.btnDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Delete.setClick(view, position);
-                Cost.setClick(view, position);
-            }
+        holder.btnDelete.setOnClickListener(view -> {
+            int pos = holder.getAdapterPosition();
+            if (pos == RecyclerView.NO_ID) return;
+            Delete.setClick(view, pos);
+            Cost.setClick(view, pos);
         });
     }
 
@@ -75,7 +76,7 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.ViewHolder
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView tvName, tvPrice, tvCount;
         public ImageView btnPlus, btnMinus;
-        public LinearLayout btnDelete;
+        public LinearLayout btnDelete, llCount;
 
         ViewHolder(View view) {
             super(view);
@@ -85,6 +86,7 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.ViewHolder
             btnPlus = view.findViewById(R.id.btnPlus);
             btnMinus = view.findViewById(R.id.btnMinus);
             btnDelete = view.findViewById(R.id.ll_delete);
+            llCount = view.findViewById(R.id.ll_count);
         }
     }
 }
